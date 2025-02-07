@@ -12,7 +12,7 @@ import { ThumbsUp, Send } from "lucide-react";
 import { Comment } from "./comment";
 import { useState } from "react";
 import { useSession } from "next-auth/react";
-import { createComment, getPosts } from "@/app/services/postService";
+import { createComment } from "@/app/services/postService";
 
 interface PostProps {
   post: {
@@ -22,68 +22,58 @@ interface PostProps {
     comments: { id: number; author: { username: string }; content: string }[];
     reactions: { likes: number; hearts: number };
   };
+  onCommentAdded: (postId: number, newComment: any) => void;
 }
 
-export function Post({ post }: PostProps) {
+export function Post({ post, onCommentAdded }: PostProps) {
   const { data: session } = useSession();
   const [newComment, setNewComment] = useState("");
-  const [comments, setComments] = useState(post.comments);
-  const [posts, setPosts] = useState(post);
-  const fetchPosts = async () => {
-    try {
-      const fetchedPosts = await getPosts();
-      setPosts(fetchedPosts);
-    } catch (error) {
-      console.error("Error fetching posts:", error);
-    }
-  };
+  const [localComments, setLocalComments] = useState(post.comments); // Mantén un estado local para los comentarios que se muestran
+
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
-
-    if (!session?.user) {
-      console.error("Usuario no autenticado");
-      return;
-    }
+    if (!newComment.trim() || !session?.user) return;
 
     try {
       const userId = session.user.id;
       const postId = post.id;
-      const data = {
-        postId,
-        userId,
-        content: newComment,
-      };
+      const data = { postId, userId, content: newComment };
+
       const newCommentData = await createComment(data);
-      await fetchPosts();
-      setComments([...comments, newCommentData]);
+
+      setLocalComments([...localComments, newCommentData]); // Actualiza el estado local *con el nuevo comentario*
       setNewComment("");
+
+      onCommentAdded(postId, newCommentData); // Llama a la función del padre para que actualice *todos* los posts
     } catch (error) {
       console.error("Error adding comment:", error);
     }
   };
-
   return (
     <Card>
       <CardHeader className="flex flex-row items-center gap-4">
         <div>
-          <h2 className="text-lg font-semibold">{posts.author.username}</h2>
+          <h2 className="text-lg font-semibold">{post?.author?.username}</h2>
         </div>
       </CardHeader>
       <CardContent>
-        <p>{posts.content}</p>
+        <p>{post?.content}</p>
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-4">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="sm">
             <ThumbsUp className="mr-2 h-4 w-4" />
-            {posts.reactions.likes}
+            {post?.reactions?.likes}
           </Button>
         </div>
         <div className="w-full space-y-2">
-          {posts.comments.map((comment) => (
-            <Comment key={comment.id} comment={comment} />
-          ))}
+          {localComments.map(
+            (
+              comment // Renderiza *siempre* desde el estado local
+            ) => (
+              <Comment key={comment.id} comment={comment} />
+            )
+          )}
         </div>
         {session?.user && (
           <form onSubmit={handleAddComment} className="flex w-full gap-2">
