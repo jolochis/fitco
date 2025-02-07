@@ -40,7 +40,7 @@ function Login() {
       seterrorLogin("User o Password incorrect");
       return res.error;
     } else {
-      router.push("/dashboard");
+      router.push("/");
     }
   });
 
