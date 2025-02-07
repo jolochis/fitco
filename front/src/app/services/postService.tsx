@@ -34,3 +34,15 @@ export const createComment = async (data) => {
     return error;
   }
 };
+export const searchPosts = async (query: string) => {
+  try {
+    const res = await axios.get(`${URL}/post/search`, {
+      params: { query },
+    });
+
+    return res.data;
+  } catch (error) {
+    console.error("Error searching posts:", error);
+    return [];
+  }
+};

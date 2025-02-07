@@ -48,16 +48,18 @@ export class PostService {
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} post`;
-  }
-
-  update(id: number, updatePostDto: UpdatePostDto) {
-    console.log(updatePostDto);
-    return `This action updates a #${id} post`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} post`;
+  async searchPosts(query: string) {
+    return this.prismaService.post.findMany({
+      where: {
+        OR: [
+          { content: { contains: query, mode: 'insensitive' } },
+          { author: { username: { contains: query, mode: 'insensitive' } } },
+        ],
+      },
+      include: {
+        author: { select: { username: true } },
+        comments: { include: { author: { select: { username: true } } } },
+      },
+    });
   }
 }

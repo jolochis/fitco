@@ -37,7 +37,7 @@ export default function CreatePostPage() {
 
     setLoading(false);
     if (res) {
-      router.push("/dashboard");
+      router.push("/");
     }
   });
 
@@ -67,7 +67,7 @@ export default function CreatePostPage() {
             <Button
               variant="outline"
               type="button"
-              onClick={() => router.push("/dashboard")}
+              onClick={() => router.push("/")}
             >
               Cancel
             </Button>

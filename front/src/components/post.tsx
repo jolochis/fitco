@@ -28,7 +28,7 @@ interface PostProps {
 export function Post({ post, onCommentAdded }: PostProps) {
   const { data: session } = useSession();
   const [newComment, setNewComment] = useState("");
-  const [localComments, setLocalComments] = useState(post.comments); // Mantén un estado local para los comentarios que se muestran
+  const [localComments, setLocalComments] = useState(post.comments);
 
   const handleAddComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,10 +41,10 @@ export function Post({ post, onCommentAdded }: PostProps) {
 
       const newCommentData = await createComment(data);
 
-      setLocalComments([...localComments, newCommentData]); // Actualiza el estado local *con el nuevo comentario*
+      setLocalComments([...localComments, newCommentData]);
       setNewComment("");
 
-      onCommentAdded(postId, newCommentData); // Llama a la función del padre para que actualice *todos* los posts
+      onCommentAdded(postId, newCommentData);
     } catch (error) {
       console.error("Error adding comment:", error);
     }
@@ -60,20 +60,10 @@ export function Post({ post, onCommentAdded }: PostProps) {
         <p>{post?.content}</p>
       </CardContent>
       <CardFooter className="flex flex-col items-start gap-4">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm">
-            <ThumbsUp className="mr-2 h-4 w-4" />
-            {post?.reactions?.likes}
-          </Button>
-        </div>
         <div className="w-full space-y-2">
-          {localComments.map(
-            (
-              comment // Renderiza *siempre* desde el estado local
-            ) => (
-              <Comment key={comment.id} comment={comment} />
-            )
-          )}
+          {localComments.map((comment) => (
+            <Comment key={comment.id} comment={comment} />
+          ))}
         </div>
         {session?.user && (
           <form onSubmit={handleAddComment} className="flex w-full gap-2">
