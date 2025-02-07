@@ -3,7 +3,6 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import axios from "axios";
 import { JWT } from "next-auth/jwt";
 import { loginUser } from "@/app/services/auth";
-console.log("Cargando archivo de configuración de NextAuth");
 
 interface Token extends JWT {
   id?: string;
@@ -34,7 +33,6 @@ export const authOptions: NextAuthOptions = {
           }
 
           const { email, password } = credentials;
-          console.log("🔹 Autorizando usuario:", email);
 
           const res = await loginUser(email, password);
 
