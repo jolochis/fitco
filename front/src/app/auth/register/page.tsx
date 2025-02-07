@@ -2,15 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button"; // Botón de ShadCN
-import { Input } from "@/components/ui/input"; // Input de ShadCN
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Card,
   CardContent,
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"; // Componentes de Card de ShadCN
+} from "@/components/ui/card";
 import Link from "next/link";
 import { createUser } from "@/app/services/auth";
 import { useState } from "react";

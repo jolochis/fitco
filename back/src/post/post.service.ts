@@ -22,8 +22,30 @@ export class PostService {
     }
   }
 
-  findAll() {
-    return `This action returns all post`;
+  async findAll() {
+    try {
+      const posts = await this.prismaService.post.findMany({
+        include: {
+          author: {
+            select: { id: true, username: true, email: true },
+          },
+          comments: {
+            include: {
+              author: {
+                select: { id: true, username: true },
+              },
+            },
+          },
+          Reaction: true,
+        },
+      });
+
+      console.log(posts);
+      return posts;
+    } catch (error) {
+      console.error('Error fetching posts:', error);
+      return [];
+    }
   }
 
   findOne(id: number) {
